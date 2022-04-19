@@ -9,12 +9,6 @@ import flixel.math.FlxRandom;
 import flixel.util.FlxColor;
 import haxe.io.UInt8Array.UInt8ArrayData;
 
-typedef Cloud =
-{
-	var sprite:FlxSprite;
-	var state:Bool;
-}
-
 class PlayState extends FlxState
 {
 	// var bg:FlxBackdrop;
@@ -23,6 +17,8 @@ class PlayState extends FlxState
 	var loops:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
 	var hud:HUD;
 	var focus:FlxSprite;
+
+	public var clouds:Array<FlxSprite>;
 
 	public var random:Array<Array<Int>> = [
 		[23, 669],
@@ -42,6 +38,7 @@ class PlayState extends FlxState
 	override public function create()
 	{
 		super.create();
+		makeClouds();
 		loadClouds();
 		focus = new FlxSprite().makeGraphic(1280, 720, FlxColor.WHITE, false);
 		focus.alpha = 0;
@@ -58,6 +55,7 @@ class PlayState extends FlxState
 		add(hud);
 		// loadClouds();
 		add(focus);
+		loadClouds();
 		FlxG.camera.target = focus;
 	}
 
@@ -107,34 +105,59 @@ class PlayState extends FlxState
 	// 		add(currImg);
 	// 	}
 	// }
+	// function loadClouds()
+	// {
+	// 	var randomV:Array<Int>;
+	// 	for (i in 0...10)
+	// 	{
+	// 		var loopCount:Int = 0;
+	// 		sepValue += 720;
+	// 		while (loopCount != 8)
+	// 		{
+	// 			var currCloud:Cloud = {
+	// 				sprite: new FlxSprite(32, 32);
+	// 			}
+	// 			randomV = new FlxRandom().getObject(random);
+	// 			currCloud.sprite.x = randomV[0];
+	// 			currCloud.sprite.y = randomV[1];
+	// 			if (currCloud.state == false)
+	// 			{
+	// 				currCloud.state = true;
+	// 				currCloud.sprite.y += sepValue;
+	// 				loopCount++;
+	// 				add(currCloud.sprite);
+	// 			}
+	// 			else
+	// 			{
+	// 				continue;
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	function loadClouds()
 	{
 		var randomV:Array<Int>;
-
 		for (i in 0...10)
 		{
-			var loopCount:Int = 0;
 			sepValue += 720;
-			while (loopCount != 8)
+			for (cloud in clouds)
 			{
-				var currCloud:Cloud = {
-					sprite: new FlxSprite(32, 32);
-					state: false;
-				}
 				randomV = new FlxRandom().getObject(random);
-				if (currCloud.state == false)
-				{
-					currCloud.state = true;
-					currCloud.sprite.y += sepValue;
-					loopCount++;
-					add(currCloud.sprite);
-				}
-				else
-				{
-					continue;
-				}
+				cloud.x = randomV[0];
+				cloud.y = randomV[1] + sepValue;
+				add(cloud);
+				random.remove(randomV);
 			}
+		}
+	}
+
+	function makeClouds()
+	{
+		for (i in 0...8)
+		{
+			var cloud:FlxSprite = new FlxSprite(32, 32);
+			clouds.push(cloud);
 		}
 	}
 
